@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PipelineIQ · B2B Sales Analytics Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F5F9;--sf:#fff;--bd:#E5E7EF;--tx:#111827;--t2:#5B6475;--t3:#98A1B3;--br:#4F46E5;--brS:#EEF0FF;--brM:#B8BEF7;--pos:#15803D;--posB:#E7F6EC;--neg:#DC2626;--negB:#FDECEC;--wn:#B45309;--wnB:#FFF4DE;--wnL:#F3D9A4;--nv:#0F172A}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);font-size:13px;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--br);outline-offset:2px}
+svg{display:block}
+.app{display:flex;min-height:100vh}
+.side{width:72px;background:var(--nv);padding:18px 14px;display:flex;flex-direction:column;gap:8px;flex:none}
+.logo{width:36px;height:36px;margin:0 auto 30px;border-radius:10px;background:var(--br);color:#fff;font-weight:700;font-size:18px;display:grid;place-items:center}
+.nav{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;color:#8B97B1}
+.nav.on{background:var(--br);color:#fff}
+.nav:hover:not(.on){background:#1b2640}
+.main{flex:1;min-width:0}
+.top{height:72px;background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:16px;padding:0 36px}
+.top h1{font-size:20px;font-weight:600}
+.top .sub{font-size:12px;color:var(--t2);margin-top:2px}
+.grow{flex:1}
+.search{display:flex;align-items:center;gap:8px;width:260px;height:36px;background:var(--bg);border-radius:8px;padding:0 12px;color:var(--t3)}
+.search input{border:0;background:none;font:inherit;width:100%;outline:0;color:var(--tx)}
+.bell{position:relative;width:36px;height:36px;border:1px solid var(--bd);border-radius:10px;display:grid;place-items:center;color:var(--t2)}
+.bell i{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--neg);border:1.5px solid #fff}
+.user{display:flex;align-items:center;gap:10px}
+.av{border-radius:50%;color:#fff;font-weight:600;display:grid;place-items:center;flex:none}
+.user b{font-weight:500;display:block}.user small{font-size:11px;color:var(--t2)}
+.body{padding:20px 36px 36px;display:flex;flex-direction:column;gap:20px;max-width:1368px}
+.filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:relative}
+.chip{display:flex;align-items:center;gap:6px;background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;font-weight:500}
+.chip small{font-size:12px;color:var(--t2);font-weight:400}
+.chip.on{background:var(--brS);border-color:var(--br)}
+.chip:hover{border-color:var(--br)}
+.seg{display:flex;background:#ECEEF5;border-radius:8px;padding:3px;gap:2px}
+.seg button{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;color:var(--t2)}
+.seg button.on{background:#fff;color:var(--tx);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.reset{padding:6px 8px;font-weight:500;color:var(--t3)}.reset.on{color:var(--br)}
+.menu{position:absolute;top:44px;z-index:20;background:#fff;border:1px solid var(--bd);border-radius:10px;padding:6px;width:220px;box-shadow:0 8px 24px rgba(0,0,0,.16)}
+.menu button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 12px;border-radius:6px;text-align:left}
+.menu button:hover{background:var(--bg)}.menu button.on{background:var(--brS);font-weight:600}
+.alert{display:flex;align-items:center;gap:12px;background:var(--wnB);border:1px solid var(--wnL);border-radius:10px;padding:10px 16px;color:var(--wn)}
+.alert b{font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;border:1px solid var(--bd);background:#fff}
+.btn:hover{border-color:var(--br)}
+.btn.pri{background:var(--br);border-color:var(--br);color:#fff}.btn.pri:hover{background:#4338CA}
+.btn.wn{background:var(--wn);border-color:var(--wn);color:#fff}.btn.done{background:var(--posB);border-color:var(--posB);color:var(--pos)}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:24px}
+.kpi{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.kpi.p{background:var(--br);border-color:var(--br);color:#fff}
+.kpi .l{font-size:12px;font-weight:500;color:var(--t2)}.kpi.p .l{color:#D9DCFF}
+.kpi .v{font-size:26px;font-weight:700;letter-spacing:-.02em}
+.dl{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3)}.kpi.p .dl{color:#D9DCFF}
+.dc{display:inline-flex;align-items:center;gap:3px;border-radius:6px;padding:2px 6px;font-size:12px;font-weight:600}
+.dc.g{background:var(--posB);color:var(--pos)}.dc.b{background:var(--negB);color:var(--neg)}.kpi.p .dc{background:#6E67F0;color:#fff}
+.row{display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:stretch}
+.card{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.ch{display:flex;align-items:center;gap:12px}.ch h2{font-size:15px;font-weight:600}.ch p{font-size:12px;color:var(--t2);margin-top:2px}
+.insight{background:var(--brS);border-radius:8px;padding:8px 12px;font-size:12px}.insight b{color:var(--br);font-weight:600;margin-right:4px}
+.legend{display:flex;gap:18px;font-size:12px;color:var(--t2)}.legend span{display:flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px}
+.plot{position:relative}
+.tip{position:absolute;pointer-events:none;background:var(--nv);color:#fff;border-radius:10px;padding:12px;width:176px;font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);display:none;z-index:5}
+.tip b{display:block;font-weight:600;margin-bottom:6px}.tip div{display:flex;justify-content:space-between;margin-top:6px;color:#A9B2C7}.tip div span{color:#fff;font-weight:600}
+.fn{display:flex;flex-direction:column;gap:6px;cursor:pointer;border-radius:8px}
+.fn:hover .nm{color:var(--br)}
+.fn .t{display:flex;align-items:center;gap:8px}.fn .t .nm{font-weight:500}.fn .t .r{margin-left:auto}.fn .t .r b{font-weight:600}.fn .t .r small{font-size:12px;color:var(--t2)}
+.trk{height:26px;background:#F0F1F6;border-radius:6px;overflow:hidden}.trk i{display:block;height:100%;border-radius:6px;transition:width .35s}
+.conv{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:var(--t3);padding:4px 0 2px}
+.stl{display:inline-flex;align-items:center;gap:4px;background:var(--wnB);color:var(--wn);border-radius:6px;padding:2px 6px;font-size:11px;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th{font-size:12px;font-weight:500;color:var(--t2);text-align:left;padding:0 0 8px;border-bottom:1px solid var(--bd)}
+th button{display:inline-flex;align-items:center;gap:4px;font-weight:500;color:inherit}th button:hover{color:var(--br)}th.on button{color:var(--br)}
+td{padding:10px 0;border-bottom:1px solid var(--bd);vertical-align:middle}
+tbody tr{cursor:pointer}tbody tr:hover{background:#FAFAFD}
+.rep{display:flex;align-items:center;gap:10px}.rep b{font-weight:500;display:block}.rep small{font-size:11px;color:var(--t2)}
+.att{display:flex;align-items:center;gap:10px}.att .b{width:96px;height:6px;background:#F0F1F6;border-radius:3px;overflow:hidden}.att .b i{display:block;height:100%;border-radius:3px}
+.pill{display:inline-block;border-radius:999px;padding:3px 8px;font-size:11px;font-weight:600}
+.bars .r{display:grid;grid-template-columns:124px 1fr 52px;align-items:center;gap:8px;height:42px}
+.bars .t{height:20px;background:#F0F1F6;border-radius:6px;position:relative}.bars .t i{display:block;height:100%;border-radius:6px;transition:width .35s}
+.bars .v{text-align:right;font-weight:600}
+.avg{position:absolute;top:0;bottom:0;width:1.5px;background:var(--nv)}
+.scrim{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:40;animation:f .2s}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,100vw);background:#fff;z-index:50;padding:24px;overflow:auto;box-shadow:-8px 0 32px rgba(0,0,0,.18);display:flex;flex-direction:column;gap:20px;animation:s .25s ease-out}
+.drawer.w{width:min(520px,100vw)}
+@keyframes s{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}@keyframes f{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.dh{display:flex;align-items:center;gap:12px}.dh h3{font-size:18px;font-weight:600}.dh p{font-size:12px;color:var(--t2);margin-top:2px}
+.x{width:32px;height:32px;border:1px solid var(--bd);border-radius:8px;display:grid;place-items:center;color:var(--t2);margin-left:auto}
+.mk{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mk div{background:var(--bg);border-radius:10px;padding:12px}.mk small{font-size:11px;font-weight:500;color:var(--t2)}.mk b{display:block;font-size:20px;font-weight:700;margin-top:4px}
+.drawer h4{font-size:13px;font-weight:600;margin-bottom:10px}
+.mix{display:flex;gap:2px;height:12px}.mix i{border-radius:3px}
+.lg{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:10px;font-size:11px;color:var(--t2)}.lg span{display:flex;align-items:center;gap:5px}.lg i{width:8px;height:8px;border-radius:2px;display:inline-block}
+.dr{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd)}.dr small{display:block;font-size:11px;color:var(--t2);margin-top:2px}.dr b{font-weight:600}
+.deal{border:1px solid var(--bd);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.deal .a,.deal .b,.deal .c{display:flex;align-items:center;gap:8px}.deal .a b{font-size:14px;font-weight:600}.deal .a .am{margin-left:auto}
+.deal .b{font-size:12px;color:var(--t2)}.deal .b .pill{margin-left:auto}
+.deal .c .tk{flex:1;height:6px;background:#F0F1F6;border-radius:3px;overflow:hidden}.deal .c .tk i{display:block;height:100%;background:var(--neg);border-radius:3px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--nv);color:#fff;border-radius:10px;padding:10px 16px;font-weight:500;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.row{grid-template-columns:1fr}.search{display:none}}
+@media (max-width:640px){.side{display:none}.top,.body{padding-left:16px;padding-right:16px}.kpis{grid-template-columns:repeat(2,1fr);gap:12px}.user div{display:none}.card{overflow-x:auto}.bars .r{grid-template-columns:100px 1fr 44px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" aria-label="Main navigation"><div class="logo">P</div><div id="nav"></div></aside>
+  <div class="main">
+    <header class="top">
+      <div><h1>Sales performance</h1><div class="sub" id="sub"></div></div>
+      <div class="grow"></div>
+      <label class="search"><span id="ic-search"></span><input placeholder="Search accounts or reps" aria-label="Search accounts or reps"></label>
+      <button class="bell" aria-label="Notifications" id="bell"><span id="ic-bell"></span><i></i></button>
+      <div class="user"><span class="av" style="width:36px;height:36px;background:#4F46E5;font-size:13px">PS</span><div><b>Priya Sharma</b><small>Sales Manager, APAC</small></div></div>
+    </header>
+    <main class="body" id="root"></main>
+  </div>
+</div>
+<div id="layer"></div>
+<script>
+/* ---------- icons ---------- */
+const P={chev:'<path d="m6 9 6 6 6-6"/>',search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',warn:'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',dl:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',dash:'<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>',chart:'<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',brief:'<rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',up:'<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>',down:'<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',cal:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',check:'<path d="M20 6 9 17l-5-5"/>'};
+const ic=(n,s=16,c='currentColor')=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+document.getElementById('ic-search').innerHTML=ic('search');document.getElementById('ic-bell').innerHTML=ic('bell',18);
+document.getElementById('nav').innerHTML=[['dash','Dashboard',1],['chart','Analytics'],['users','Team'],['brief','Accounts'],['target','Goals']].map(n=>`<button class="nav ${n[2]?'on':''}" aria-label="${n[1]}" title="${n[1]}" style="margin-bottom:8px">${ic(n[0],20)}</button>`).join('');
+
+/* ---------- data (fictional, internally consistent) ---------- */
+const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+const AVC=['#4F46E5','#0EA5E9','#F59E0B','#10B981','#EC4899','#8B5CF6'];
+const REPS=[
+ {n:'Arjun Mehta',c:'India',won:842,att:122,win:34,pipe:'$1.9M',cyc:58,mix:[38,29,21,12],deals:[['Vertex Cloud','Proposal','$210K','Nov 14'],['Lumen Bank','Negotiation','$185K','Nov 21'],['Orion Health','Qualified','$160K','Dec 3']]},
+ {n:'Mei Chen',c:'Singapore',won:776,att:113,win:31,pipe:'$1.6M',cyc:61,mix:[35,30,22,13],deals:[['Skyline Telecom','Proposal','$240K','Nov 12'],['Orbit Fintech','Negotiation','$260K','Nov 28'],['Jade Retail','Qualified','$130K','Dec 9']]},
+ {n:'Liam O’Connor',c:'Australia',won:702,att:102,win:27,pipe:'$1.4M',cyc:66,mix:[40,28,20,12],deals:[['Acme Logistics','Negotiation','$320K','Nov 30'],['Coral Energy','Proposal','$175K','Nov 18'],['Bondi Health','Prospecting','$90K','Dec 15']]},
+ {n:'Kenji Tanaka',c:'Japan',won:655,att:95,win:29,pipe:'$1.1M',cyc:71,mix:[42,27,19,12],deals:[['Northwind Retail','Negotiation','$290K','Nov 25'],['Sakura Systems','Proposal','$150K','Nov 20'],['Kyoto Motors','Qualified','$120K','Dec 5']]},
+ {n:'Neha Kapoor',c:'India',won:590,att:86,win:24,pipe:'$1.0M',cyc:74,mix:[44,26,18,12],deals:[['Helix Health','Negotiation','$280K','Dec 2'],['Indus Bank','Proposal','$140K','Nov 22'],['Ganga Foods','Qualified','$95K','Dec 12']]},
+ {n:'Ravi Iyer',c:'India',won:498,att:72,win:20,pipe:'$0.9M',cyc:79,mix:[46,25,17,12],deals:[['Zenith Manufacturing','Negotiation','$250K','Dec 4'],['Deccan Steel','Proposal','$110K','Nov 27'],['Mysore Tech','Prospecting','$70K','Dec 18']]}
+];
+const RISK=[['Acme Logistics','Liam O’Connor','Australia',320,41],['Northwind Retail','Kenji Tanaka','Japan',290,38],['Helix Health','Neha Kapoor','India',280,35],['Orbit Fintech','Mei Chen','Singapore',260,33],['Zenith Manufacturing','Ravi Iyer','India',250,32]];
+const D={
+ all:{label:'All APAC',kpis:[['Closed-won revenue','$4.82M','+12.4%','vs. 2025',1],['Quota attainment','87.6%','−3.1 pts','vs. last qtr',0],['Open pipeline','$11.9M','+8.1%','vs. Sep',1],['Win rate','27.4%','−2.1 pts','vs. 2025',0],['Avg. deal size','$48.3K','+5.6%','vs. 2025',1],['Sales cycle','68 days','+6 days','vs. 2025',0]],
+  a:[380,410,520,440,470,560,430,450,610,550],t:[500,500,520,540,540,560,560,580,600,600],max:800,ticks:[0,200,400,600,800],
+  ql:['Q1','Q2','Q3','Q4 to date'],qa:[1310,1470,1490,550],qt:[1520,1640,1740,600],qmax:2000,qticks:[0,500,1000,1500,2000],
+  ins:['Only 3 of 10 months hit target.',' September was the strongest month at $610K (+1.7% vs. target).'],insQ:['No quarter has hit target yet.',' Q3 closed at 85.6% of target.'],
+  f:[['Prospecting',4.1,142],['Qualified',3.4,96],['Proposal',2.7,58],['Negotiation',1.7,31]],ft:'$11.9M · 327 deals',stall:5,
+  ind:[['SaaS & Tech',34],['Financial Services',31],['Healthcare',27],['Manufacturing',22],['Retail',19]],avg:27.4,indIns:'SaaS & Tech converts 15 pts above Retail.',alert:['5 deals worth $1.4M',' have been stuck in Negotiation for 30+ days.'],reps:REPS,total:8,risk:RISK,riskSum:'5 deals · $1.4M'},
+ india:{label:'India',kpis:[['Closed-won revenue','$1.93M','+9.8%','vs. 2025',1],['Quota attainment','93.7%','+4.1 pts','vs. last qtr',1],['Open pipeline','$4.6M','+5.2%','vs. Sep',1],['Win rate','25.1%','−3.0 pts','vs. 2025',0],['Avg. deal size','$44.2K','+2.3%','vs. 2025',1],['Sales cycle','72 days','+9 days','vs. 2025',0]],
+  a:[152,164,208,176,188,224,172,180,244,222],t:[195,195,205,205,205,210,210,215,220,200],max:300,ticks:[0,100,200,300],
+  ql:['Q1','Q2','Q3','Q4 to date'],qa:[524,588,596,222],qt:[595,620,645,200],qmax:800,qticks:[0,200,400,600,800],
+  ins:['4 of 10 months hit target.',' September led at $244K, 10.9% above target.'],insQ:['Q4 is already ahead of target.',' Q3 closed at 92.4% of target.'],
+  f:[['Prospecting',1.6,58],['Qualified',1.3,39],['Proposal',1.0,23],['Negotiation',0.7,12]],ft:'$4.6M · 132 deals',stall:2,
+  ind:[['SaaS & Tech',31],['Financial Services',29],['Healthcare',25],['Manufacturing',21],['Retail',18]],avg:25.1,indIns:'SaaS & Tech converts 13 pts above Retail.',alert:['2 deals worth $0.5M',' have been stuck in Negotiation for 30+ days.'],reps:REPS.filter(r=>r.c==='India'),total:3,risk:RISK.filter(r=>r[2]==='India'),riskSum:'2 deals · $0.5M'}
+};
+const REGIONS=['All APAC','India','Singapore','Australia','Japan'];
+
+/* ---------- state ---------- */
+const S={region:'all',mode:'m',sort:'won',menu:false,drawer:null,nudged:{}};
+const $=s=>document.querySelector(s),root=$('#root'),layer=$('#layer');
+const status=a=>a>=95?['On track','var(--pos)','var(--posB)']:a>=75?['Watch','var(--wn)','var(--wnB)']:['At risk','var(--neg)','var(--negB)'];
+const ini=n=>n.split(' ').map(x=>x[0]).join('');
+const rank=n=>[...REPS].sort((a,b)=>b.won-a.won).findIndex(r=>r.n===n)+1;
+const fmt=v=>v===0?'$0':v>=1000?'$'+(v/1000)+'M':'$'+v+'K';
+const lab=v=>v>=1000?'$'+(v/1000).toFixed(2)+'M':'$'+v+'K';
+
+/* ---------- chart ---------- */
+function chart(d){
+ const q=S.mode==='q',L=q?d.ql:MN,A=q?d.qa:d.a,T=q?d.qt:d.t,mx=q?d.qmax:d.max,tk=q?d.qticks:d.ticks;
+ const W=816,H=244,x0=52,pw=764,top=10,ph=200,n=A.length,sl=pw/n,bw=q?84:40,Y=v=>top+ph*(1-v/mx);
+ let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Closed-won revenue versus target">`;
+ tk.forEach(v=>{s+=`<line x1="${x0}" x2="${W}" y1="${Y(v)}" y2="${Y(v)}" stroke="${v?'#E5E7EF':'#CBD0DC'}"/><text x="44" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="#98A1B3">${fmt(v)}</text>`});
+ A.forEach((a,i)=>{const met=a>=T[i],bx=x0+sl*i+(sl-bw)/2,by=Y(a);
+  s+=`<g class="col" data-i="${i}" tabindex="0" style="cursor:pointer"><rect class="hl" x="${x0+sl*i}" y="${top}" width="${sl}" height="${ph}" fill="#EEF0FF" opacity="0"/>`+
+  `<path d="M${bx} ${Y(0)}V${by+5}a5 5 0 0 1 5-5h${bw-10}a5 5 0 0 1 5 5V${Y(0)}Z" fill="${met?'#4F46E5':'#B8BEF7'}"/>`+
+  `<text x="${bx+bw/2}" y="${by+20}" text-anchor="middle" font-size="11" font-weight="500" fill="${met?'#fff':'#0F172A'}">${lab(a)}</text>`+
+  `<rect x="${bx-8}" y="${Y(T[i])-1.5}" width="${bw+16}" height="3" fill="#0F172A"/>`+
+  `<text x="${x0+sl*i+sl/2}" y="${top+ph+22}" text-anchor="middle" font-size="12" font-weight="500" fill="#5B6475">${L[i]}</text></g>`});
+ return s+'</svg><div class="tip" id="tip"></div>';
+}
+function wireChart(d){
+ const q=S.mode==='q',L=q?d.ql:MN,A=q?d.qa:d.a,T=q?d.qt:d.t,pl=$('.plot'),tip=$('#tip'),sl=764/A.length;
+ const full=['January','February','March','April','May','June','July','August','September','October'];
+ const show=g=>{const i=+g.dataset.i,v=((A[i]/T[i]-1)*100);g.querySelector('.hl').setAttribute('opacity','.9');
+  tip.innerHTML=`<b>${q?L[i]:full[i]+' 2026'}</b><div>Closed-won<span>${lab(A[i])}</span></div><div>Target<span>${lab(T[i])}</span></div><div>vs. target<span style="color:${v>=0?'#6EE7A0':'#FCA5A5'}">${v>=0?'+':'−'}${Math.abs(v).toFixed(1)}%</span></div>`;
+  const sc=pl.clientWidth/816;let x=(52+sl*i)*sc-182;if(x<0)x=(52+sl*(i+1))*sc+6;tip.style.left=x+'px';tip.style.top='4px';tip.style.display='block'};
+ const hide=g=>{g.querySelector('.hl').setAttribute('opacity','0');tip.style.display='none'};
+ pl.querySelectorAll('.col').forEach(g=>{g.onmouseenter=()=>show(g);g.onmouseleave=()=>hide(g);g.onfocus=()=>show(g);g.onblur=()=>hide(g)});
+}
+
+/* ---------- render ---------- */
+function render(){
+ const d=D[S.region],q=S.mode==='q',filtered=S.region!=='all';
+ $('#sub').textContent=`${d.label} · Jan 1 – Oct 31, 2026 · Updated today, 9:40 AM`;
+ let reps=[...d.reps].sort((a,b)=>S.sort==='win'?b.win-a.win:b.won-a.won);
+ const iv=q?d.insQ:d.ins,mxF=d.f[0][1],shade=['#312E81','#4F46E5','#818CF8','#C7CBFA'];
+ root.innerHTML=`
+ <div class="filters">
+  <button class="chip">${ic('cal')}Jan 1 – Oct 31, 2026${ic('chev')}</button>
+  <button class="chip ${S.menu||filtered?'on':''}" id="regBtn" aria-haspopup="listbox" aria-expanded="${S.menu}"><small>Region</small>${d.label}${ic('chev')}</button>
+  <button class="chip"><small>Segment</small>All${ic('chev')}</button>
+  <button class="chip"><small>Owner</small>${filtered?'All India reps':'All reps'}${ic('chev')}</button>
+  <div class="grow"></div><small style="color:var(--t2);font-size:12px">Compare</small>
+  <div class="seg"><button class="on">vs. target</button><button>vs. 2025</button></div>
+  <button class="reset ${filtered?'on':''}" id="reset">Reset</button>
+  ${S.menu?`<div class="menu" id="menu" role="listbox" style="left:${$('#regBtn')?$('#regBtn').offsetLeft:190}px">${REGIONS.map(r=>`<button role="option" data-r="${r}" class="${r===d.label?'on':''}">${r}${r===d.label?ic('check',14,'#4F46E5'):''}</button>`).join('')}</div>`:''}
+ </div>
+ <div class="alert">${ic('warn',18)}<span><b>${d.alert[0]}</b>${d.alert[1]}</span><div class="grow"></div><button class="btn wn" id="review">Review deals</button></div>
+ <div class="kpis">${d.kpis.map((k,i)=>`<div class="kpi ${i?'':'p'}"><span class="l">${k[0]}</span><span class="v">${k[1]}</span><span class="dl"><span class="dc ${k[4]?'g':'b'}">${ic(k[2][0]==='+'?'up':'down',12)}${k[2].replace(/^[+−]/,'')}</span>${k[3]}</span></div>`).join('')}</div>
+ <div class="row">
+  <section class="card"><div class="ch"><div><h2>Revenue vs. target</h2><p>Closed-won revenue by ${q?'quarter':'month'}</p></div><div class="grow"></div>
+   <div class="seg"><button data-m="m" class="${q?'':'on'}">Monthly</button><button data-m="q" class="${q?'on':''}">Quarterly</button></div></div>
+   <div class="insight"><b>${iv[0]}</b>${iv[1]}</div>
+   <div class="legend"><span><i style="background:#4F46E5"></i>Met target</span><span><i style="background:#B8BEF7"></i>Below target</span><span><i style="background:#0F172A;height:3px;width:14px"></i>Target</span></div>
+   <div class="plot">${chart(d)}</div></section>
+  <section class="card"><div class="ch"><div><h2>Open pipeline by stage</h2><p>${d.ft}</p></div></div>
+   ${d.f.map((s,i)=>`<div class="fn" data-stage="${i}" ${i===3?'tabindex="0" role="button" title="Review stalled deals"':''}><div class="t"><span class="nm">${s[0]}</span>${i===3?`<span class="stl">${ic('warn',11)}${d.stall} stalled</span>`:''}<span class="r"><b>$${s[1].toFixed(1)}M</b> <small>· ${s[2]} deals</small></span></div><div class="trk"><i style="width:${Math.max(10,100*s[1]/mxF)}%;background:${shade[i]}"></i></div></div>${i<3?`<div class="conv">${ic('down',12)}${Math.round(d.f[i+1][2]/s[2]*100)}% advance to ${d.f[i+1][0]}</div>`:''}`).join('')}
+  </section>
+ </div>
+ <div class="row">
+  <section class="card"><div class="ch"><div><h2>Rep performance</h2><p>${reps.length} of ${d.total} reps · sorted by ${S.sort==='win'?'win rate':'closed-won'} · click a row for details</p></div><div class="grow"></div><button class="btn" id="exp">${ic('dl',14)}Export</button></div>
+   <div style="overflow-x:auto"><table><thead><tr><th>Rep</th><th class="${S.sort==='won'?'on':''}"><button data-s="won">Closed-won ${S.sort==='won'?ic('down',12):''}</button></th><th>Quota attainment</th><th class="${S.sort==='win'?'on':''}"><button data-s="win">Win rate ${S.sort==='win'?ic('down',12):''}</button></th><th>Pipeline</th><th>Status</th></tr></thead><tbody>
+   ${reps.map(r=>{const st=status(r.att);return `<tr tabindex="0" data-rep="${r.n}"><td><div class="rep"><span class="av" style="width:28px;height:28px;font-size:11px;background:${AVC[REPS.indexOf(r)%6]}">${ini(r.n)}</span><div><b>${r.n}</b><small>${r.c}</small></div></div></td><td><b style="font-weight:600">$${r.won}K</b></td><td><div class="att"><div class="b"><i style="width:${Math.min(100,r.att)}%;background:${st[1]}"></i></div><b style="font-weight:600">${r.att}%</b></div></td><td style="${S.sort==='win'?'color:var(--br);font-weight:600':''}">${r.win}%</td><td>${r.pipe}</td><td><span class="pill" style="color:${st[1]};background:${st[2]}">${st[0]}</span></td></tr>`}).join('')}
+   </tbody></table></div></section>
+  <section class="card"><div class="ch"><div><h2>Win rate by industry</h2><p>Share of closed deals won · team avg. ${d.avg}%</p></div></div>
+   <div class="bars">${d.ind.map(r=>`<div class="r"><span>${r[0]}</span><div class="t"><i style="width:${r[1]/40*100}%;background:${r[1]>=d.avg?'#4F46E5':'#B8BEF7'}"></i><span class="avg" style="left:${d.avg/40*100}%"></span></div><span class="v">${r[1]}%</span></div>`).join('')}</div>
+   <div style="font-size:11px;font-weight:500;color:var(--t2);text-align:center">Vertical line = team avg. ${d.avg}%</div>
+   <p style="font-size:12px;color:var(--t2)">${d.indIns}</p></section>
+ </div>`;
+ wireChart(d);
+ $('#regBtn').onclick=e=>{e.stopPropagation();S.menu=!S.menu;render()};
+ if(S.menu){document.querySelectorAll('#menu button').forEach(b=>b.onclick=()=>{const r=b.dataset.r;S.menu=false;if(r==='All APAC')S.region='all';else if(r==='India')S.region='india';else{toast(`Demo data covers All APAC and India. “${r}” is not in this prototype.`)}render()})}
+ $('#reset').onclick=()=>{S.region='all';S.mode='m';S.sort='won';S.menu=false;render()};
+ $('#review').onclick=openRisk;
+ document.querySelector('[data-stage="3"]').onclick=openRisk;
+ document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{S.mode=b.dataset.m;render()});
+ document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{S.sort=S.sort===b.dataset.s&&b.dataset.s==='win'?'won':b.dataset.s;render()});
+ document.querySelectorAll('[data-rep]').forEach(tr=>{tr.onclick=()=>openRep(tr.dataset.rep);tr.onkeydown=e=>{if(e.key==='Enter')openRep(tr.dataset.rep)}});
+ $('#exp').onclick=()=>{const rows=[['Rep','Region','Closed-won ($K)','Quota attainment (%)','Win rate (%)','Pipeline'],...reps.map(r=>[r.n,r.c,r.won,r.att,r.win,r.pipe])];const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'}));a.download='rep-performance.csv';a.click();toast('Exported rep-performance.csv')};
+}
+document.addEventListener('click',e=>{if(S.menu&&!e.target.closest('#menu')){S.menu=false;render()}});
+
+/* ---------- drawers ---------- */
+function close(){layer.innerHTML='';S.drawer=null}
+function openRep(name){const r=REPS.find(x=>x.n===name),st=status(r.att),cols=['#312E81','#4F46E5','#818CF8','#C7CBFA'],nm=['Prospecting','Qualified','Proposal','Negotiation'];
+ const dw=r.win-27.4,dc=r.cyc-68;
+ layer.innerHTML=`<div class="scrim" id="scrim"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="${r.n} details">
+ <div class="dh"><span class="av" style="width:48px;height:48px;font-size:16px;background:${AVC[REPS.indexOf(r)%6]}">${ini(r.n)}</span><div><h3>${r.n}</h3><p>Account Executive · ${r.c}</p></div><button class="x" id="cl" aria-label="Close">${ic('x')}</button></div>
+ <div style="display:flex;align-items:center;gap:8px"><span class="pill" style="color:${st[1]};background:${st[2]}">${st[0]}</span><small style="color:var(--t2);font-size:12px">${r.att}% of quota · ranked #${rank(r.n)} of 8</small></div>
+ <div class="mk"><div><small>Closed-won</small><b>$${r.won}K</b></div><div><small>Win rate</small><b>${r.win}%</b></div><div><small>Pipeline</small><b>${r.pipe}</b></div></div>
+ <div><h4>Pipeline mix</h4><div class="mix">${r.mix.map((m,i)=>`<i style="width:${m}%;background:${cols[i]}"></i>`).join('')}</div><div class="lg">${r.mix.map((m,i)=>`<span><i style="background:${cols[i]}"></i>${nm[i]} ${m}%</span>`).join('')}</div></div>
+ <div><h4>Top open deals</h4>${r.deals.map(x=>`<div class="dr"><div><b style="font-weight:500">${x[0]}</b><small>${x[1]} · Close ${x[3]}</small></div><b>${x[2]}</b></div>`).join('')}</div>
+ <div><h4>vs. team average</h4>
+  <div class="dr"><span style="color:var(--t2)">Win rate</span><span><b>${r.win}%</b> <span class="dc ${dw>=0?'g':'b'}" style="margin-left:8px">${dw>=0?'+':'−'}${Math.abs(dw).toFixed(1)} pts</span></span></div>
+  <div class="dr"><span style="color:var(--t2)">Sales cycle</span><span><b>${r.cyc} days</b> <span class="dc ${dc<=0?'g':'b'}" style="margin-left:8px">${dc<=0?'−':'+'}${Math.abs(dc)} days</span></span></div></div>
+ <div class="grow"></div><button class="btn pri" style="justify-content:center;padding:10px" id="prof">Open full rep profile</button></aside>`;
+ bindClose();$('#prof').onclick=()=>toast('Full rep profile is outside this prototype')}
+function openRisk(){const d=D[S.region];
+ layer.innerHTML=`<div class="scrim" id="scrim"></div><aside class="drawer w" role="dialog" aria-modal="true" aria-label="At-risk deals">
+ <div class="dh"><span class="av" style="width:44px;height:44px;border-radius:12px;background:var(--wnB);color:var(--wn)">${ic('warn',20)}</span><div><h3>At-risk deals</h3><p>${d.riskSum} stuck in Negotiation for 30+ days</p></div><button class="x" id="cl" aria-label="Close">${ic('x')}</button></div>
+ ${d.risk.map((x,i)=>`<div class="deal"><div class="a"><b>${x[0]}</b><span class="pill" style="color:var(--br);background:var(--brS)">Negotiation</span><b class="am">$${x[3]}K</b></div>
+  <div class="b"><span class="av" style="width:20px;height:20px;font-size:9px;background:${AVC[i%6]}">${ini(x[1])}</span>${x[1]} · ${x[2]}<span class="pill" style="color:var(--neg);background:var(--negB)">${x[4]} days stalled</span></div>
+  <div class="c"><div class="tk"><i style="width:${x[4]/45*100}%"></i></div><button class="btn nudge" data-k="${x[0]}">Nudge owner</button></div></div>`).join('')}
+ <div class="grow"></div><div style="display:flex;gap:10px"><button class="btn" id="exl">${ic('dl',14)}Export list</button><button class="btn pri" id="nall">Nudge all owners</button></div></aside>`;
+ bindClose();
+ const mark=b=>{b.textContent='Nudged';b.classList.add('done')};
+ document.querySelectorAll('.nudge').forEach(b=>{if(S.nudged[b.dataset.k])mark(b);b.onclick=()=>{S.nudged[b.dataset.k]=1;mark(b);toast('Reminder sent to owner')}});
+ $('#nall').onclick=()=>{d.risk.forEach(x=>S.nudged[x[0]]=1);document.querySelectorAll('.nudge').forEach(mark);toast(`Reminders sent to ${d.risk.length} owners`)};
+ $('#exl').onclick=()=>{const rows=[['Deal','Owner','Region','Amount ($K)','Days stalled'],...d.risk];const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'}));a.download='at-risk-deals.csv';a.click();toast('Exported at-risk-deals.csv')}}
+function bindClose(){$('#scrim').onclick=close;$('#cl').onclick=close;$('#cl').focus()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){close();if(S.menu){S.menu=false;render()}}});
+let tt;function toast(m){clearTimeout(tt);const o=document.querySelector('.toast');if(o)o.remove();const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.appendChild(t);tt=setTimeout(()=>t.remove(),2600)}
+$('#bell').onclick=openRisk;
+render();
+</script>
+</body>
+</html>
